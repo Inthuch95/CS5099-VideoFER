@@ -55,7 +55,7 @@ validation_data_dir = '../dataFromPython3/validation'
 test_data_dir = '../dataFromPython3/validation'
 nb_train_samples =144#2045 #144 #2045 #2290# 168# 2290 #8 #2318
 nb_validation_samples = 35 #689 #689 #35 #689 #770 #41# 770 #1
-epochs = 100
+epochs = 50
 batch_size = 1#10
 
 def save_bottlebeck_featuresTest():
@@ -193,11 +193,12 @@ if __name__ == '__main__':
             if 'png' in file:
                 labelbyemotionVal.append(emotionLbls[emotions.index(emotion)])
     validation_labels = np.array(labelbyemotionVal)
- 
+
     X_train = np.zeros((144, 3, 3, 512), dtype=np.uint8)
     X_train = np.reshape(train_data, (144, 3, 3*512))
     X_test = np.zeros((38, 3, 3, 512), dtype=np.uint8)
     X_test = np.reshape(validation_data, (38, 3, 3*512))
+
     model = Sequential()
     # model.add(Flatten(input_shape=train_data.shape[1:]))
     model.add(LSTM(2048, return_sequences=False, input_shape=X_train.shape[1:],
@@ -205,10 +206,10 @@ if __name__ == '__main__':
     model.add(Dense(512, activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(6, activation='softmax'))
- 
+  
     model.compile(optimizer='adam',
                   loss='categorical_crossentropy', metrics=['accuracy'])
- 
+  
     model.fit(X_train, train_labels,
               epochs=epochs,
               batch_size=batch_size,
@@ -216,7 +217,7 @@ if __name__ == '__main__':
     score = model.evaluate(X_test, validation_labels)
     print(score)
     model.save_weights(top_model_weights_path)
-
+ 
     # serialize model to JSON
     model_json = model.to_json()
     with open( "../PretrainLSMTCONFJAFFE1.json", "w") as json_file:

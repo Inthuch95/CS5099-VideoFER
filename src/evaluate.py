@@ -7,19 +7,20 @@ import numpy as np
 import pandas as pd
 import itertools
 import matplotlib.pyplot as plt
-from keras.models import model_from_json
+from keras.models import model_from_json, load_model
 from sklearn.metrics import confusion_matrix
 import os
 
 if __name__ == '__main__':
     #classify each image in the validation set
     emotions = ['angry', 'disgusted', 'fearful', 'happy', 'sad', 'surprised']
-    json_file = open('../PretrainLSTM.json', 'r')
-    loaded_model_json = json_file.read()
-    json_file.close()
-    loaded_model = model_from_json(loaded_model_json)
-    # load weights into new model
-    loaded_model.load_weights("../PreTraineLSTMWeight.h5")
+#     json_file = open('../PretrainLSTM.json', 'r')
+#     loaded_model_json = json_file.read()
+#     json_file.close()
+#     loaded_model = model_from_json(loaded_model_json)
+#     # load weights into new model
+#     loaded_model.load_weights("../PreTraineLSTMWeight.h5")
+    loaded_model = load_model('../LSTM_256_1024.h5')
     print("Loaded model from disk")
     
     # evaluate loaded model on test data
@@ -108,6 +109,7 @@ if __name__ == '__main__':
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
+    plt.savefig('../confusion_matrix_percent_LSTM.png', format='png')
     plt.show()
 
     #######################################################################################
@@ -125,7 +127,7 @@ if __name__ == '__main__':
     plt.clf()
     ax = fig.add_subplot(111)
     ax.set_aspect(1)
-    res = ax.imshow(np.array(norm_conf), cmap="Blues",
+    res = ax.imshow(np.array(norm_conf), cmap="Reds",
                     interpolation='nearest')
 
     width, height = conf.shape

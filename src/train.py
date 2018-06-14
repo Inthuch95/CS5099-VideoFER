@@ -3,13 +3,13 @@ Created on Jun 13, 2018
 
 @author: Inthuch Therdchanakul
 '''
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from keras.layers import LSTM, Flatten, Dropout, Dense
+from keras.callbacks import EarlyStopping, ModelCheckpoint
 import numpy as np
 import os
 
-selected_model = "lstm"
-epochs = 50
+epochs = 100
 batch_size = 1
 
 def load_data():
@@ -43,30 +43,23 @@ def load_data():
 
 def get_network(X_train):
     model = Sequential()
-    # model.add(Flatten(input_shape=train_data.shape[1:]))
-    if selected_model == "lstm":
-        model.add(LSTM(2048, return_sequences=False, input_shape=X_train.shape[1:],
-                       dropout=0.5))
-        model.add(Dense(512, activation='relu'))
-        model.add(Dropout(0.5))
-        model.add(Dense(6, activation='softmax'))
-        model.compile(optimizer='adam',
-                      loss='categorical_crossentropy', metrics=['accuracy'])
-    elif selected_model == "mlp":
-        model.add(Flatten(input_shape=X_train.shape[1:]))
-        model.add(Dense(1024, activation='relu'))
-        model.add(Dropout(0.2))
-        model.add(Dense(6, activation='softmax'))
-    
-        model.compile(optimizer='adam',
-                      loss='categorical_crossentropy', metrics=['accuracy'])
+    model.add(LSTM(256, return_sequences=False, input_shape=X_train.shape[1:],
+                   dropout=0.2))
+    model.add(Dense(1024, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(6, activation='softmax'))
+    model.compile(optimizer='adam',
+                  loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
 def train(model, X_train, y_train, X_test, y_test): 
+    callbacks = [ModelCheckpoint('../LSTM_256_1024.h5', monitor='val_acc', save_best_only=True, verbose=0)]
     model.fit(X_train, y_train,
               epochs=epochs,
               batch_size=batch_size,
-              validation_data=(X_test, y_test))
+              validation_data=(X_test, y_test),
+              callbacks=callbacks)
+    model = load_model('../LSTM_256_1024.h5')
     score = model.evaluate(X_test, y_test)
     print(score)
     return model
@@ -74,10 +67,10 @@ def train(model, X_train, y_train, X_test, y_test):
 def save_model(model):
     # serialize model to JSON
     model_json = model.to_json()
-    with open( "../PretrainLSTM.json", "w") as json_file:
+    with open( "../PretrainLSTM2.json", "w") as json_file:
         json_file.write(model_json)
     # serialize weights to HDF5
-    model.save_weights("../PreTraineLSTMWeight.h5")
+    model.save_weights("../PreTrainLSTMWeight2.h5")
     print("Saved model to disk")
 
 if __name__ == '__main__':

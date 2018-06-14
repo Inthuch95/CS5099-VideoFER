@@ -60,5 +60,5 @@ def save_bottlebeck_features():
 
 if __name__ == '__main__':
     save_bottlebeck_featuresTest()
-#     save_bottlebeck_features()
-    print("features saved")
+    save_bottlebeck_features()
+#     print("features saved")

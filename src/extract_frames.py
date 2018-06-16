@@ -5,22 +5,24 @@ Created on Jun 16, 2018
 '''
 import os
 
-emotions = [ 'Angry', 'Disgust', 'Fear', 'Neutral', 'Sad', 'Surprise']
+emotions = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
 video_path =  '../EUDataBasicVideo/'
 
-def capture_images():
+def extract_frames_from_video():
     #go through video folder
     for emotion in emotions:
+        # create label folder
         newdir = '../video_frames/' + emotion
         if emotion not in os.listdir('../video_frames/'):
             os.makedirs(newdir)
-        for filename in os.listdir(video_path+emotion):
-            if '.mov' in filename:
-                filename1 = filename
-                filename = filename.replace('.mov', '')
-                file = video_path + emotion + '/' + filename1
+        for f in os.listdir(video_path+emotion):
+            if '.mov' in f:
+                filename = f.replace('.mov', '')
+                video_file = video_path + emotion + '/' + f
                 filename = '../video_frames/' + emotion +  '/' + filename
-                command = 'ffmpeg -i ' + file + ' -vf thumbnail=2,setpts=N/TB -r 1 -vframes 300 ' + filename + '%05d.jpeg'
+                # use ffmpeg to extract frames
+                command = 'ffmpeg -i ' + video_file + ' -vf thumbnail=2,setpts=N/TB -r 1 -vframes 300 ' + filename + '%05d.jpeg'
                 os.system(command)
+    
 if __name__ == '__main__':
-    capture_images()
+    extract_frames_from_video()

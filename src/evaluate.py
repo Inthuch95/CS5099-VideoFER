@@ -20,7 +20,7 @@ if __name__ == '__main__':
 #     loaded_model = model_from_json(loaded_model_json)
 #     # load weights into new model
 #     loaded_model.load_weights("../PreTraineLSTMWeight.h5")
-    loaded_model = load_model('../LSTM_256_1024.h5')
+    loaded_model = load_model('../LSTM_8_2048_512.h5')
     print("Loaded model from disk")
     
     # evaluate loaded model on test data

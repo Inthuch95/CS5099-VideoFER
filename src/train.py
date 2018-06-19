@@ -10,7 +10,10 @@ import numpy as np
 import os
 
 epochs = 100
-batch_size = 1
+batch_size = 8
+lstm_unit = 2048
+hidden_unit = 512
+model_file = '../LSTM_' + str(batch_size) + '_' + str(lstm_unit) + '_' + str(hidden_unit) + '.h5'
 
 def load_data():
     # load training data
@@ -43,9 +46,9 @@ def load_data():
 
 def get_network(X_train):
     model = Sequential()
-    model.add(LSTM(256, return_sequences=False, input_shape=X_train.shape[1:],
-                   dropout=0.2))
-    model.add(Dense(1024, activation='relu'))
+    model.add(LSTM(lstm_unit, return_sequences=False, input_shape=X_train.shape[1:],
+                   dropout=0.5))
+    model.add(Dense(hidden_unit, activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(6, activation='softmax'))
     model.compile(optimizer='adam',
@@ -53,13 +56,13 @@ def get_network(X_train):
     return model
 
 def train(model, X_train, y_train, X_test, y_test): 
-    callbacks = [ModelCheckpoint('../LSTM_256_1024.h5', monitor='val_acc', save_best_only=True, verbose=0)]
+    callbacks = [ModelCheckpoint(model_file, monitor='val_acc', save_best_only=True, verbose=0)]
     model.fit(X_train, y_train,
               epochs=epochs,
               batch_size=batch_size,
               validation_data=(X_test, y_test),
               callbacks=callbacks)
-    model = load_model('../LSTM_256_1024.h5')
+    model = load_model(model_file)
     score = model.evaluate(X_test, y_test)
     print(score)
     return model

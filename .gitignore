@@ -1,3 +1,5 @@
 *.project
 .pydevproject
 *.h5
+*.mov
+*.DS_Store

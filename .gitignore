@@ -3,3 +3,6 @@
 *.h5
 *.mov
 *.DS_Store
+dataset/
+video_frames/
+models/

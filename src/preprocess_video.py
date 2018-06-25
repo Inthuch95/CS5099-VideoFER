@@ -94,7 +94,7 @@ def print_progress(index, filelist, start):
     elapsed_time = int(checkpoint - start)
     print('{}% complete, elapsed time {}s'.format(str(percentage), str(elapsed_time)))
     
-def train_test_split():
+def train_test_split(test_size=0.05):
     dataset_path = '../dataset/All/'
     train_path = '../dataset/Train/'
     val_path = '../dataset/Validation/'
@@ -109,8 +109,10 @@ def train_test_split():
         filelist = [f for f in os.listdir(emotion_path) if os.path.isfile(os.path.join(emotion_path, f))]
         # define split index
         # 80% train, 10% validation, 10% test
-        train_split = int(0.8 * len(filelist))
-        val_split = int(0.9 * len(filelist))
+        split1 = 1.0 - test_size
+        split2 = split1 - test_size
+        train_split = int(split2 * len(filelist))
+        val_split = int(split1 * len(filelist))
         
         # split the data
         train_files = filelist[:train_split]
@@ -137,11 +139,11 @@ def train_test_split():
 def delete_data(train_path, val_path, test_path):
     # delete previous data
     try:
-        if 'Train' not in os.listdir('../dataset/'):
+        if 'Train' in os.listdir('../dataset/'):
             rmtree(train_path)
-        if 'Validation' not in os.listdir('../dataset/'):
+        if 'Validation' in os.listdir('../dataset/'):
             rmtree(val_path)
-        if 'Test' not in os.listdir('../dataset/'):
+        if 'Test' in os.listdir('../dataset/'):
             rmtree(test_path)
     except OSError as e:
         print ("Error: %s - %s." % (e.filename, e.strerror))
@@ -169,6 +171,6 @@ def create_label_dir(train_path, val_path, test_path, labels):
         print ("Error: %s - %s." % (e.filename, e.strerror))
     
 if __name__ == '__main__':
-    extract_frames_from_video()
-    crop_face_from_frames()
+#     extract_frames_from_video()
+#     crop_face_from_frames()
     train_test_split()  

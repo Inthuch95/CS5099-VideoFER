@@ -13,29 +13,23 @@ import os
 
 if __name__ == '__main__':
     #classify each image in the validation set
-    emotions = ['angry', 'disgusted', 'fearful', 'happy', 'sad', 'surprised']
-#     json_file = open('../PretrainLSTM.json', 'r')
-#     loaded_model_json = json_file.read()
-#     json_file.close()
-#     loaded_model = model_from_json(loaded_model_json)
-#     # load weights into new model
-#     loaded_model.load_weights("../PreTraineLSTMWeight.h5")
-    loaded_model = load_model('../LSTM_8_2048_512.h5')
+    emotions = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
+    loaded_model = load_model('../LSTM/LSTM_256_1024.h5')
     print("Loaded model from disk")
     
     # evaluate loaded model on test data
     loaded_model.compile(optimizer='adam',
                   loss='categorical_crossentropy', metrics=['accuracy'])
-    path = '../dataFromPython3/validation/'
+    path = '../dataset/Validation/'
     Accurate = 0
     counter = 0
     labelsValues = []
     PredictedValues = []
-    test_data = np.load(open('../bottleneck_features_test.npy', 'rb'))
+    test_data = np.load(open('../dataset/bottleneck_features_validation.npy', 'rb'))
     counterImage = 0
     for emotion in emotions:
         for file in os.listdir(path+emotion):
-            if 'png' in file: # and counterImage< 689:
+            if 'jpg' in file: # and counterImage< 689:
                 image = test_data[counterImage]
                 image = image.reshape(1, len(image), len(image)*512)
                 label = emotions.index(emotion)
@@ -63,8 +57,7 @@ if __name__ == '__main__':
     print(results)
     print(acc)
     
-    emotions = ['angry', 'disgusted', 'fearful', 'happy', 'sad', 'surprise']
-    lookup = {0: "angry", 1: "disgusted", 2: 'fearful',3: "happy", 4: 'sad', 5: "surprise"}  # , 6:"reassured"}
+    lookup = {0: "Angry", 1: "Disgusted", 2: 'Fearful',3: "Happy", 4: 'Neutral', 5: 'Sad', 6: "Surprise"}  # , 6:"reassured"}
     y_true = pd.Series([lookup[_] for _ in labelsValues])  # np.random.random_integers(0, 5, size=100)])
     y_pred = pd.Series([lookup[_] for _ in PredictedValues])  # np.random.random_integers(0, 5, size=100)])
 
@@ -75,8 +68,7 @@ if __name__ == '__main__':
     conf = confusion_matrix(y_true, y_pred)
 
     #######################################################################################
-    lookup = {0: "angry", 1: "disgusted", 2: "fearful", 3: "happy", 4:  "sad",
-              5: "surprise"}  # , 6:"reassured"}
+    lookup = {0: "Angry", 1: "Disgusted", 2: 'Fearful',3: "Happy", 4: 'Neutral', 5: 'Sad', 6: "Surprise"}
     # lookup = {0: 'Angry', 1: 'Disgust', 2: 'happy', 3: 'neutral', 4: 'surprised', 5: 'Sad', 6: 'fearful'}
     y_true = pd.Series([lookup[_] for _ in labelsValues])  # np.random.random_integers(0, 5, size=100)])
     y_pred = pd.Series([lookup[_] for _ in PredictedValues])  # np.random.random_integers(0, 5, size=100)])
@@ -88,9 +80,9 @@ if __name__ == '__main__':
     conf = conf.astype('float') / conf.sum(axis=1)[:, np.newaxis]
     y_true1 = np.array(y_true)
     i=0
-    y_true1.tofile('../y_trueCNNCohenCohen'+str(i)+'.csv', sep=',')
+    y_true1.tofile('../y_true'+str(i)+'.csv', sep=',')
     y_pred1 = np.array(y_pred)
-    y_pred1.tofile('../y_predCNNCohenCohen'+str(i)+'.csv', sep=',')
+    y_pred1.tofile('../y_pred'+str(i)+'.csv', sep=',')
 
     plt.imshow(conf, interpolation='nearest', cmap='Reds')
     plt.title('Confusion Matrix')

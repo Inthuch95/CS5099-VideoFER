@@ -1,6 +1,7 @@
 import numpy as np
 from keras.preprocessing.image import ImageDataGenerator
 from keras import applications
+from keras.applications.vgg16 import VGG16, preprocess_input
 import os
 
 # dimensions of our images.

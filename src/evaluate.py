@@ -20,18 +20,18 @@ if __name__ == '__main__':
     # evaluate loaded model on test data
     loaded_model.compile(optimizer='adam',
                   loss='categorical_crossentropy', metrics=['accuracy'])
-    path = '../dataset/Validation/'
+    path = '../dataset/Test/'
     Accurate = 0
     counter = 0
     labelsValues = []
     PredictedValues = []
-    test_data = np.load(open('../dataset/bottleneck_features_validation.npy', 'rb'))
+    test_data = np.load(open('../dataset/bottleneck_features_test.npy', 'rb'))
     counterImage = 0
     for emotion in emotions:
         for file in os.listdir(path+emotion):
             if 'jpg' in file: # and counterImage< 689:
                 image = test_data[counterImage]
-                image = image.reshape(1, len(image), len(image)*512)
+                image = image.reshape(1, len(image)*len(image), 512)
                 label = emotions.index(emotion)
                 pred = loaded_model.predict(image)
                 pred1 = list(pred[0])

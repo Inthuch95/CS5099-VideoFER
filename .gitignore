@@ -5,5 +5,8 @@
 *.DS_Store
 dataset/
 video_frames/
+dataset2/
+video_frames2/
 LSTM/
 SVM/
+Log/

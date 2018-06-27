@@ -9,7 +9,7 @@ from keras.callbacks import TensorBoard, ModelCheckpoint
 from train_util import load_data_lstm
 import os
 
-epochs = 100
+epochs = 50
 batch_size = 32
 lstm_unit = 512
 hidden_unit = 1024
@@ -35,19 +35,20 @@ def train(model, X_train, y_train, X_val, y_val, X_test, y_test):
     model.fit(X_train, y_train,
               epochs=epochs,
               batch_size=batch_size,
-              validation_data=(X_val, y_val),
+              validation_data=(X_test, y_test),
               callbacks=callbacks)
     model = load_model(model_file)
-    score = model.evaluate(X_test, y_test)
+    score = model.evaluate(X_val, y_val)
     print(score)
     return model
 
 if __name__ == '__main__':
-#     if sub_dir not in os.listdir('../LSTM/'):
-#         os.mkdir('../LSTM/' + sub_dir)
+    child_dir = 'LSTM_' + str(lstm_unit) + '_' + str(hidden_unit)
+    if child_dir not in os.listdir('../LSTM/'):
+        os.mkdir('../LSTM/' + sub_dir)
     X_train, y_train, X_val, y_val, X_test, y_test = load_data_lstm()
-#     model = get_network(X_train)
-#     model = train(model, X_train, y_train, X_val, y_val, X_test, y_test)
-    model = load_model(model_file)
-    score = model.evaluate(X_test, y_test)
-    print(score)
+    model = get_network(X_train)
+    model = train(model, X_train, y_train, X_val, y_val, X_test, y_test)
+#     model = load_model(model_file)
+#     score = model.evaluate(X_test, y_test)
+    

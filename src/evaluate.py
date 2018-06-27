@@ -14,18 +14,18 @@ import os
 if __name__ == '__main__':
     #classify each image in the validation set
     emotions = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
-    loaded_model = load_model('../LSTM/LSTM_256_1024.h5')
+    loaded_model = load_model('../LSTM/LSTM_512_1024/LSTM_512_1024.h5')
     print("Loaded model from disk")
     
     # evaluate loaded model on test data
     loaded_model.compile(optimizer='adam',
                   loss='categorical_crossentropy', metrics=['accuracy'])
-    path = '../dataset/Test/'
+    path = '../dataset/Validation/'
     Accurate = 0
     counter = 0
     labelsValues = []
     PredictedValues = []
-    test_data = np.load(open('../dataset/bottleneck_features_test.npy', 'rb'))
+    test_data = np.load(open('../dataset/bottleneck_features_validation.npy', 'rb'))
     counterImage = 0
     for emotion in emotions:
         for file in os.listdir(path+emotion):

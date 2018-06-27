@@ -4,7 +4,8 @@ Created on Jun 26, 2018
 @author: User
 '''
 import numpy as np
-from keras.applications.vgg16 import VGG16, preprocess_input
+from keras.applications.inception_v3 import InceptionV3, preprocess_input
+from keras.models import Model
 from keras.preprocessing import image
 import os
 
@@ -30,6 +31,7 @@ def get_feature_sequence(model):
                 sequence.append(features)
             # Save the sequence.)
             np.save(path, sequence)
+        print('{} sequences extracted'.format(emotion))
 
 def save_feature_sequence():
     X_train, y_train = [],[] 
@@ -81,7 +83,8 @@ def rescale_list(input_list, size):
     return output[:size]
 
 if __name__ == '__main__':
-#     model = VGG16(include_top=False, weights='imagenet')
-#     get_feature_sequence(model)
+    base_model = InceptionV3(include_top=True, weights='imagenet')
+    model = Model(inputs=base_model.input, outputs=base_model.get_layer('avg_pool').output)
+    get_feature_sequence(model)
     save_feature_sequence()
     print('Sequences saved')

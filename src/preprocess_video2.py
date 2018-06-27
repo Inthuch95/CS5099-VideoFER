@@ -69,15 +69,6 @@ def crop_face_from_frames():
                 except RuntimeError:
                     continue
 
-def rescale_list(input_list, size):
-        assert len(input_list) >= size
-        # Get the number to skip between iterations.
-        skip = len(input_list) // size
-        # Build our new output.
-        output = [input_list[i] for i in range(0, len(input_list), skip)]
-        # Cut off the last one if needed.
-        return output[:size]
-
 def save_frame(detected_face, frame, save_path, count, frames):
     for _, d in enumerate(detected_face):
 #         print("Detection {}: Left: {} Top: {} Right: {} Bottom: {}".format(

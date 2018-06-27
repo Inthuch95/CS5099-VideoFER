@@ -31,7 +31,7 @@ if __name__ == '__main__':
         for file in os.listdir(path+emotion):
             if 'jpg' in file: # and counterImage< 689:
                 image = test_data[counterImage]
-                image = image.reshape(1, len(image)*len(image), 512)
+                image = image.reshape(1, len(image), len(image)*512)
                 label = emotions.index(emotion)
                 pred = loaded_model.predict(image)
                 pred1 = list(pred[0])

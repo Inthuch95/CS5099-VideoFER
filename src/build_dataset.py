@@ -14,6 +14,7 @@ seq_length = 2
 data_path = '../prepared_data/Emotions/'
 emotions = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
 emotionLbls = [[1,0,0,0,0,0,0],[0,1,0,0,0,0,0], [0,0,1,0,0,0,0],[0,0,0,1,0,0,0], [0,0,0,0,1,0,0], [0,0,0,0,0,1,0], [0,0,0,0,0,0,1]]
+deleted_frames = np.load('../deleted_frames.npy')
 
 # get sequence of features for RNN
 def extract_feature_sequence(model):
@@ -25,19 +26,25 @@ def extract_feature_sequence(model):
             frames = [f for f in os.listdir(video_path) if os.path.isfile(os.path.join(video_path, f))]
             if len(frames) >= seq_length:
                 sequence = []
-                for frame in frames:
-                    frame = video_path + '/' + frame
-                    features = extract_features(model, frame)
-                    sequence.append(features)
-                    if len(sequence) == seq_length:
-                        X.append(sequence)
-                        y.append(emotionLbls[emotions.index(emotion)])
-                        sequence = []
+                X, y, sequence = process_frames(frames, video_path, emotion, X, y, sequence)
         print('{} sequences extracted'.format(emotion))
     print('Saving sequence')
-    save_feature_sequence(X, y)
+    save_features(X, y)
 
-def save_feature_sequence(X, y, test_split=0.1):
+def process_frames(frames, video_path, emotion, X, y, sequence):
+    for frame in frames:
+        # exclude neutral frames 
+        if frame not in deleted_frames:
+            frame = video_path + '/' + frame
+            features = extract_features(model, frame)
+            sequence.append(features)
+            if len(sequence) == seq_length:
+                X.append(sequence)
+                y.append(emotionLbls[emotions.index(emotion)])
+                sequence = []
+    return X, y, sequence
+
+def save_features(X, y, test_split=0.1):
     X_train, y_train, X_val, y_val, X_test, y_test = train_test_split(X, y, test_split=test_split)
             
     print(X_train.shape)

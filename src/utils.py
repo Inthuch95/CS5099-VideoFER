@@ -8,6 +8,7 @@ from keras.layers import LSTM, Dense
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 def plot_confusion_matrix(cm, title='Confusion matrix', float_display='.3f', cmap=plt.cm.Reds, class_names=None):
     # create confusion matrix plot
@@ -77,6 +78,11 @@ def get_network(X_train, lstm_unit):
                    dropout=0.2))
     model.add(Dense(7, activation='softmax'))
     return model
+
+def save_deleted_frames():
+    data_path = '../prepared_data/deleted/'
+    deleted_frames = [f for f in os.listdir(data_path)]
+    np.save('../deleted_frames.npy', deleted_frames)
 
 if __name__ == '__main__':
     pass

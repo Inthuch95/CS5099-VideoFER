@@ -4,9 +4,7 @@ Created on Jun 23, 2018
 @author: Inthuch Therdchanakul
 '''
 from sklearn.svm import LinearSVC 
-from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix
-import itertools
 import matplotlib.pyplot as plt
 from sklearn.model_selection import cross_val_score
 from utils import load_data_svm, plot_confusion_matrix

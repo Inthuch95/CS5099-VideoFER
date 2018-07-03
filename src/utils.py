@@ -3,11 +3,13 @@ Created on Jun 23, 2018
 
 @author: Inthuch Therdchanakul
 '''
+from keras.models import Sequential
+from keras.layers import LSTM, Dense
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.Reds, class_names=None):
+def plot_confusion_matrix(cm, title='Confusion matrix', float_display='.3f', cmap=plt.cm.Reds, class_names=None):
     # create confusion matrix plot
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
@@ -21,7 +23,7 @@ def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.Reds, class_
 
     thresh = cm.max() / 2.
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, format(cm[i, j], '.3f'),
+        plt.text(j, i, format(cm[i, j], float_display),
                  horizontalalignment="center",
                  color="white" if cm[i, j] > thresh else "black")
 
@@ -43,7 +45,7 @@ def get_predictions_and_labels(model, X, y):
         y_pred.append(p)    
     return y_true, y_pred    
 
-def load_sequence_lstm():
+def load_data():
     # load train data
     X_train = np.load(open('../prepared_data/sequence/X_train_vgg16.npy', 'rb'))
     X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], X_train.shape[2]*X_train.shape[3]*X_train.shape[4])
@@ -69,6 +71,12 @@ def load_data_svm():
     y_test = np.load('../prepared_data/single/y_test_vgg16.npy')
     return X_train, y_train, X_test, y_test
 
+def get_network(X_train, lstm_unit):
+    model = Sequential()
+    model.add(LSTM(lstm_unit, return_sequences=False, input_shape=X_train.shape[1:],
+                   dropout=0.2))
+    model.add(Dense(7, activation='softmax'))
+    return model
 
 if __name__ == '__main__':
     pass

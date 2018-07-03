@@ -35,7 +35,7 @@ def evaluate_cv(model, X_train, y_train, kernel='linear'):
 
 def display_score(scores):
     print('Scores: ', scores)
-    print('Accuracy: %0.2f (+/- %0.2f)' % (scores.mean(), scores.std() * 2))
+    print('Accuracy: %0.4f' % (scores.mean()))
 
 if __name__ == '__main__':
     X_train, y_train, X_test, y_test = load_data_svm()
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     svm_linear = pickle.load(open('../SVM/linear.pkl', 'rb'))
     linear_scores = pickle.load(open('../SVM/linear_cv.pkl', 'rb')) 
     display_score(linear_scores)
-    print('Test accuracy: ', svm_linear.score(X_test, y_test))
+    print('Test accuracy: %0.4f' % (svm_linear.score(X_test, y_test)))
     y_pred = svm_linear.predict(X_test)
     cm = confusion_matrix(y_test, y_pred)
     cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]

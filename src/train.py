@@ -3,11 +3,10 @@ Created on Jun 13, 2018
 
 @author: Inthuch Therdchanakul
 '''
-from keras.models import Sequential, load_model
-from keras.layers import LSTM, Dense
+from keras.models import load_model
 from keras.callbacks import TensorBoard, ModelCheckpoint
 from sklearn.metrics import confusion_matrix
-from utils import load_sequence_lstm, plot_confusion_matrix, get_predictions_and_labels
+from utils import load_data, plot_confusion_matrix, get_predictions_and_labels, get_network
 import time
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,26 +15,20 @@ import os
 emotions = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
 epochs = 100
 batch_size = 32
-lstm_unit = 256
+lstm_unit = 512
 current_time = time.strftime("%Y%m%d-%H%M%S")
 model_dir = 'LSTM_' + str(lstm_unit) + '_' + current_time + '/'
 filename = 'LSTM_' + str(lstm_unit) + '_' + current_time + '.hdf5'
 model_file = '../LSTM/' + model_dir + filename
 
-def get_network(X_train):
-    model = Sequential()
-    model.add(LSTM(lstm_unit, return_sequences=False, input_shape=X_train.shape[1:],
-                   dropout=0.2))
-    model.add(Dense(7, activation='softmax'))
-    return model
-
 def train(model, X_train, y_train, X_val, y_val): 
+    # compile and train the model
     log_dir = '../LSTM/' + model_dir + 'log/'
     os.mkdir(log_dir)
     model.compile(optimizer='adam',
                   loss='categorical_crossentropy', metrics=['accuracy'])
     callbacks = [ModelCheckpoint(model_file, monitor='val_acc', save_best_only=True, verbose=0),
-                 TensorBoard(log_dir=log_dir, histogram_freq=1, write_graph=True, write_images=True)]
+                 TensorBoard(log_dir=log_dir, histogram_freq=10, write_graph=True)]
     model.fit(X_train, y_train,
               epochs=epochs,
               batch_size=batch_size,
@@ -44,20 +37,40 @@ def train(model, X_train, y_train, X_val, y_val):
     return model
 
 def evaluate(X_val, y_val):
+    # evaluate the model with validation set
     model = load_model(model_file)
     scores = model.evaluate(X_val, y_val)
-    print('val_loss: {}, vall_acc: {}'.format(scores[0], scores[1]))
+    print('val_loss: {}, val_acc: {}'.format(scores[0], scores[1]))
+    
     y_true, y_pred = get_predictions_and_labels(model, X_val, y_val)
     cm = confusion_matrix(y_true, y_pred)
-    cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-    plot_confusion_matrix(cm, class_names=emotions)
+    cm_percent = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    # plot percentage confusion matrix
+    fig1, ax1 = plt.subplots()
+    plot_confusion_matrix(cm_percent, class_names=emotions)
+    plt.savefig('../LSTM/' + model_dir + 'cm_percent_val.png', format='png')
+    # plot normal confusion matrix
+    fig2, ax2 = plt.subplots()
+    plot_confusion_matrix(cm, float_display='.0f', class_names=emotions)
+    plt.savefig('../LSTM/' + model_dir + 'cm_val.png', format='png')
+    
     plt.show()
+    
+def compare_model(X_val, y_val):
+    folder_list = [model_dir for model_dir in os.listdir('../LSTM/') if 'LSTM' in model_dir]
+    for folder in folder_list:
+        filename = folder + '.hdf5'
+        path = os.path.join('../LSTM', folder, filename)
+        model = load_model(path)
+        scores = model.evaluate(X_val, y_val)
+        print('model: {}, val_loss: {}, val_acc: {}'.format(folder, scores[0], scores[1]))
 
 if __name__ == '__main__':
-    if model_dir not in os.listdir('../LSTM/'):
-        os.mkdir('../LSTM/' + model_dir)
-    X_train, y_train, X_val, y_val, X_test, y_test = load_sequence_lstm()
-    model = get_network(X_train)
-    model = train(model, X_train, y_train, X_val, y_val)
-    evaluate(X_val, y_val)
+#     if not os.path.exists('../LSTM/'+ model_dir):
+#         os.mkdir('../LSTM/' + model_dir)
+    X_train, y_train, X_val, y_val, _, _ = load_data()
+#     model = get_network(X_train, lstm_unit)
+#     model = train(model, X_train, y_train, X_val, y_val)
+#     evaluate(X_val, y_val)
+    compare_model(X_val, y_val)
     

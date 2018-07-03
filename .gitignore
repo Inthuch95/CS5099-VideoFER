@@ -2,12 +2,11 @@
 .pydevproject
 *.h5
 *.mov
+*.mp4
 *.DS_Store
-dataset/
 video_frames/
-dataset2/
-video_frames2/
 LSTM/
 SVM/
 Log/
 prepared_data/
+best model/

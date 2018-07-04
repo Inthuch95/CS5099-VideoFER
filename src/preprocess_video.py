@@ -11,27 +11,28 @@ emotions = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
 
 def extract_frames_from_video():
     video_path =  '../EUDataBasicVideo/'
-    if not os.path.exists('../video_frames'):
+    if not os.path.exists('../video_frames/'):
         os.mkdir('../video_frames/')
+        os.mkdir('../video_frames/Basic/')
     #go through video folder
     for emotion in emotions:
         # create label folder
-        emotion_path = '../video_frames/' + emotion
+        emotion_path = '../video_frames/Basic/' + emotion
         if not os.path.exists(emotion_path):
             os.mkdir(emotion_path)
         for f in os.listdir(video_path+emotion):
             if '.mov' in f:
                 filename = f.replace('.mov', '')
                 video_file = video_path + emotion + '/' + f
-                os.makedirs('../video_frames/' + emotion + '/' + filename +  '/')
-                filename = '../video_frames/' + emotion + '/' + filename +  '/' + filename
+                os.mkdir('../video_frames/Basic/' + emotion + '/' + filename +  '/')
+                filename = '../video_frames/Basic/' + emotion + '/' + filename +  '/' + filename
                 # use ffmpeg to extract frames
                 command = 'ffmpeg -i ' + video_file + ' -vf thumbnail=2,setpts=N/TB -r 1 -vframes 300 ' + filename + '%05d.jpeg'
                 os.system(command)
                 
 def crop_face_from_frames():
-    path = '../video_frames/'
-    dataset_path = '../prepared_data/Emotions'
+    path = '../video_frames/Basic/'
+    dataset_path = '../prepared_data/Basic/data/'
     count = 0 
     face_detector = dlib.get_frontal_face_detector()
     

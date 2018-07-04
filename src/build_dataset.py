@@ -11,7 +11,7 @@ import os
 
 img_width, img_height = 100,100
 seq_length = 2
-data_path = '../prepared_data/Emotions/'
+data_path = '../prepared_data/Basic/data/'
 emotions = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
 emotionLbls = [[1,0,0,0,0,0,0],[0,1,0,0,0,0,0], [0,0,1,0,0,0,0],[0,0,0,1,0,0,0], [0,0,0,0,1,0,0], [0,0,0,0,0,1,0], [0,0,0,0,0,0,1]]
 deleted_frames = np.load('../deleted_frames.npy')
@@ -48,16 +48,16 @@ def save_features(X, y, test_split=0.1):
     X_train, y_train, X_val, y_val, X_test, y_test = train_test_split(X, y, test_split=test_split)
             
     print(X_train.shape)
-    np.save('../prepared_data/sequence/X_train_vgg16.npy', X_train)
-    np.save('../prepared_data/sequence/y_train_vgg16.npy', y_train)
+    np.save('../prepared_data/Basic/sequence/X_train_vgg16.npy', X_train)
+    np.save('../prepared_data/Basic/sequence/y_train_vgg16.npy', y_train)
     
     print(X_val.shape)
-    np.save('../prepared_data/sequence/X_val_vgg16.npy', X_val)
-    np.save('../prepared_data/sequence/y_val_vgg16.npy', y_val)
+    np.save('../prepared_data/Basic/sequence/X_val_vgg16.npy', X_val)
+    np.save('../prepared_data/Basic/sequence/y_val_vgg16.npy', y_val)
     
     print(X_test.shape)
-    np.save('../prepared_data/sequence/X_test_vgg16.npy', X_test)
-    np.save('../prepared_data/sequence/y_test_vgg16.npy', y_test)
+    np.save('../prepared_data/Basic/sequence/X_test_vgg16.npy', X_test)
+    np.save('../prepared_data/Basic/sequence/y_test_vgg16.npy', y_test)
 
 def extract_features(model, image_path):
     img = image.load_img(image_path, target_size=(img_width, img_height))

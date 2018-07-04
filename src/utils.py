@@ -48,28 +48,28 @@ def get_predictions_and_labels(model, X, y):
 
 def load_data():
     # load train data
-    X_train = np.load(open('../prepared_data/sequence/X_train_vgg16.npy', 'rb'))
+    X_train = np.load(open('../prepared_data/Basic/sequence/X_train_vgg16.npy', 'rb'))
     X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], X_train.shape[2]*X_train.shape[3]*X_train.shape[4])
-    y_train = np.load('../prepared_data/sequence/y_train_vgg16.npy')
+    y_train = np.load('../prepared_data/Basic/sequence/y_train_vgg16.npy')
     # load train data
-    X_val = np.load(open('../prepared_data/sequence/X_val_vgg16.npy', 'rb'))
+    X_val = np.load(open('../prepared_data/Basic/sequence/X_val_vgg16.npy', 'rb'))
     X_val = X_val.reshape(X_val.shape[0], X_val.shape[1], X_val.shape[2]*X_val.shape[3]*X_val.shape[4])
-    y_val = np.load('../prepared_data/sequence/y_val_vgg16.npy')      
+    y_val = np.load('../prepared_data/Basic/sequence/y_val_vgg16.npy')      
     #load test data
-    X_test = np.load(open('../prepared_data/sequence/X_test_vgg16.npy', 'rb'))
+    X_test = np.load(open('../prepared_data/Basic/sequence/X_test_vgg16.npy', 'rb'))
     X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], X_test.shape[2]*X_test.shape[3]*X_test.shape[4])
-    y_test = np.load('../prepared_data/sequence/y_test_vgg16.npy')
+    y_test = np.load('../prepared_data/Basic/sequence/y_test_vgg16.npy')
     return X_train, y_train, X_val, y_val, X_test, y_test
 
 def load_data_svm():
     # load train data
-    X_train = np.load('../prepared_data/single/X_train_vgg16.npy')
+    X_train = np.load('../prepared_data/Basic/single/X_train_vgg16.npy')
     X_train = X_train.reshape(X_train.shape[0], X_train.shape[1]*X_train.shape[2]*X_train.shape[3])
-    y_train = np.load('../prepared_data/single/y_train_vgg16.npy')
+    y_train = np.load('../prepared_data/Basic/single/y_train_vgg16.npy')
     #load test data
-    X_test = np.load('../prepared_data/single/X_test_vgg16.npy')
+    X_test = np.load('../prepared_data/Basic/single/X_test_vgg16.npy')
     X_test = X_test.reshape(X_test.shape[0], X_test.shape[1]*X_test.shape[2]*X_test.shape[3])
-    y_test = np.load('../prepared_data/single/y_test_vgg16.npy')
+    y_test = np.load('../prepared_data/Basic/single/y_test_vgg16.npy')
     return X_train, y_train, X_test, y_test
 
 def get_network(X_train, lstm_unit):
@@ -80,7 +80,7 @@ def get_network(X_train, lstm_unit):
     return model
 
 def save_deleted_frames():
-    data_path = '../prepared_data/deleted/'
+    data_path = '../prepared_data/Basic/deleted/'
     deleted_frames = [f for f in os.listdir(data_path)]
     np.save('../deleted_frames.npy', deleted_frames)
 

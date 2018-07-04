@@ -18,7 +18,7 @@ batch_size = 32
 lstm_unit = 512
 current_time = time.strftime("%Y%m%d-%H%M%S")
 model_dir = 'LSTM_' + str(lstm_unit) + '_' + current_time + '/'
-filename = 'LSTM_' + str(lstm_unit) + '_' + current_time + '.hdf5'
+filename = 'LSTM_' + str(lstm_unit) + '_' + current_time + '.h5'
 model_file = '../LSTM/' + model_dir + filename
 
 def train(model, X_train, y_train, X_val, y_val): 
@@ -59,7 +59,7 @@ def evaluate(X_val, y_val):
 def compare_model(X_val, y_val):
     folder_list = [model_dir for model_dir in os.listdir('../LSTM/') if 'LSTM' in model_dir]
     for folder in folder_list:
-        filename = folder + '.hdf5'
+        filename = folder + '.h5'
         path = os.path.join('../LSTM', folder, filename)
         model = load_model(path)
         scores = model.evaluate(X_val, y_val)

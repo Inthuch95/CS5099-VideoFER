@@ -5,12 +5,14 @@ Created on Jun 23, 2018
 '''
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
+from sklearn.model_selection import train_test_split
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
+import pickle
 import os
-
-def plot_confusion_matrix(cm, title='Confusion matrix', float_display='.3f', cmap=plt.cm.Reds, class_names=None):
+        
+def plot_confusion_matrix(cm, title='Confusion matrix', float_display='.4f', cmap=plt.cm.Greens, class_names=None):
     # create confusion matrix plot
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
@@ -46,43 +48,103 @@ def get_predictions_and_labels(model, X, y):
         y_pred.append(p)    
     return y_true, y_pred    
 
-def load_data():
-    # load train data
-    X_train = np.load(open('../prepared_data/Basic/sequence/X_train_vgg16.npy', 'rb'))
-    X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], X_train.shape[2]*X_train.shape[3]*X_train.shape[4])
-    y_train = np.load('../prepared_data/Basic/sequence/y_train_vgg16.npy')
-    # load train data
-    X_val = np.load(open('../prepared_data/Basic/sequence/X_val_vgg16.npy', 'rb'))
-    X_val = X_val.reshape(X_val.shape[0], X_val.shape[1], X_val.shape[2]*X_val.shape[3]*X_val.shape[4])
-    y_val = np.load('../prepared_data/Basic/sequence/y_val_vgg16.npy')      
-    #load test data
-    X_test = np.load(open('../prepared_data/Basic/sequence/X_test_vgg16.npy', 'rb'))
-    X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], X_test.shape[2]*X_test.shape[3]*X_test.shape[4])
-    y_test = np.load('../prepared_data/Basic/sequence/y_test_vgg16.npy')
+def load_data_sequence(data_type='Basic'):
+    # load data
+    if data_type == 'Basic':
+        base_dir = '../prepared_data/Basic/'
+    else:
+        base_dir = '../prepared_data/Complex/'
+    X = np.load(base_dir+'sequence/X_vgg16.npy')
+    print(X.shape)
+    X = X.reshape(X.shape[0], X.shape[1], X.shape[2]*X.shape[3]*X.shape[4])
+    y = np.load(base_dir+'sequence/y_vgg16.npy')
+    X_train, y_train, X_val, y_val, X_test, y_test = split_dataset(X, y, test_size=0.2)
     return X_train, y_train, X_val, y_val, X_test, y_test
 
-def load_data_svm():
-    # load train data
-    X_train = np.load('../prepared_data/Basic/single/X_train_vgg16.npy')
-    X_train = X_train.reshape(X_train.shape[0], X_train.shape[1]*X_train.shape[2]*X_train.shape[3])
-    y_train = np.load('../prepared_data/Basic/single/y_train_vgg16.npy')
-    #load test data
-    X_test = np.load('../prepared_data/Basic/single/X_test_vgg16.npy')
-    X_test = X_test.reshape(X_test.shape[0], X_test.shape[1]*X_test.shape[2]*X_test.shape[3])
-    y_test = np.load('../prepared_data/Basic/single/y_test_vgg16.npy')
+def load_data_single(data_type='Basic'):
+    # load data
+    if data_type == 'Basic':
+        base_dir = '../prepared_data/Basic/'
+    else:
+        base_dir = '../prepared_data/Complex/'
+    X = np.load(base_dir+'single/X_vgg16.npy')
+    print(X.shape)
+    X = X.reshape(X.shape[0], X.shape[1]*X.shape[2]*X.shape[3]*X.shape[4])
+    y = np.load(base_dir+'single/y_vgg16.npy')
+    X_train, y_train, X_test, y_test = split_dataset(X, y, test_size=0.2, val_split=False)
     return X_train, y_train, X_test, y_test
 
-def get_network(X_train, lstm_unit):
-    model = Sequential()
-    model.add(LSTM(lstm_unit, return_sequences=False, input_shape=X_train.shape[1:],
-                   dropout=0.2))
-    model.add(Dense(7, activation='softmax'))
-    return model
+def split_dataset(X, y, test_size=0.2, val_split=True):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42, stratify=y)
+    if val_split:
+        X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state=42, stratify=y_test)
+        return X_train, y_train, X_val, y_val, X_test, y_test
+    else:
+        return X_train, y_train, X_test, y_test
 
-def save_deleted_frames():
-    data_path = '../prepared_data/Basic/deleted/'
-    deleted_frames = [f for f in os.listdir(data_path)]
-    np.save('../deleted_frames.npy', deleted_frames)
+def save_deleted_frames(data_type='Basic'):
+    if data_type == 'Basic':
+        data_path = '../prepared_data/Basic/deleted/'
+        deleted_frames = [f for f in os.listdir(data_path)]
+        np.save('../basic_deleted_frames.npy', deleted_frames)
+    elif data_type == 'Complex':
+        data_path = '../prepared_data/Complex/deleted/'
+        deleted_frames = [f for f in os.listdir(data_path)]
+        np.save('../complex_deleted_frames.npy', deleted_frames)
+    
+def replace_whitespace(parent):
+    # remove whitespace from the video dataset
+    for path, folders, files in os.walk(parent):
+        for f in files:
+            os.rename(os.path.join(path, f), os.path.join(path, f.replace(' ', '_')))
+        for i in range(len(folders)):
+            new_name = folders[i].replace(' ', '_')
+            os.rename(os.path.join(path, folders[i]), os.path.join(path, new_name))
+            folders[i] = new_name
+            
+def save_var_data(data_type='Basic'):
+    if data_type == 'Complex':
+        data_dict = {'EMOTIONS': [f for f in os.listdir('../EUDataComplexVideo/') if os.path.isdir('../EUDataComplexVideo/'+f)], 
+                     'DELETED_FRAMES': np.load('../complex_deleted_frames.npy'),
+                     'VIDEO_PATH': '../EUDataComplexVideo/',
+                     'EXTRACT_PATH': '../video_frames/Complex/',
+                     'DATA_PATH': '../prepared_data/Complex/data/',
+                     'SEQUENCE_PATH': '../prepared_data/Complex/sequence/',
+                     'SINGLE_PATH': '../prepared_data/Complex/single/',
+                     'DELETED_PATH': '../prepared_data/Complex/deleted/'}
+        with open('../complex_emotions_data.pkl', 'wb') as f:
+            pickle.dump(data_dict, f)
+    elif data_type == 'Basic':
+        data_dict = {'EMOTIONS': [f for f in os.listdir('../EUDataBasicVideo/') if os.path.isdir('../EUDataBasicVideo/'+f)], 
+                   'DELETED_FRAMES': np.load('../basic_deleted_frames.npy'),
+                   'VIDEO_PATH': '../EUDataBasicVideo/',
+                   'EXTRACT_PATH': '../video_frames/Basic/',
+                   'DATA_PATH': '../prepared_data/Basic/data/',
+                   'SEQUENCE_PATH': '../prepared_data/Basic/sequence/',
+                   'SINGLE_PATH': '../prepared_data/Basic/single/',
+                   'DELETED_PATH': '../prepared_data/Basic/deleted/'}
+        with open('../basic_emotions_data.pkl', 'wb') as f:
+            pickle.dump(data_dict, f)
+    else:
+        print('Invalid parameter')
+
+def get_network(n_layers, input_shape, lstm_unit, nb_class):
+    model = Sequential()
+    if n_layers > 1:
+        model.add(LSTM(lstm_unit, return_sequences=True, input_shape=input_shape,
+                   dropout=0.2))
+        layer_count = 1
+        while layer_count < n_layers:
+            if layer_count == n_layers-1:
+                model.add(LSTM(lstm_unit, return_sequences=False, dropout=0.2))
+            else:
+                model.add(LSTM(lstm_unit, return_sequences=True, dropout=0.2))
+            layer_count += 1
+    else:
+        model.add(LSTM(lstm_unit, return_sequences=False, input_shape=input_shape,
+                   dropout=0.2))
+    model.add(Dense(nb_class, activation='softmax'))
+    return model
 
 if __name__ == '__main__':
     pass

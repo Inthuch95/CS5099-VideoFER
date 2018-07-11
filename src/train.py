@@ -6,29 +6,35 @@ Created on Jun 13, 2018
 from keras.models import load_model
 from keras.callbacks import TensorBoard, ModelCheckpoint
 from sklearn.metrics import confusion_matrix
-from utils import load_data, plot_confusion_matrix, get_predictions_and_labels, get_network
+from utils import load_data_sequence, plot_confusion_matrix, get_predictions_and_labels, get_network
+import pickle
 import time
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-emotions = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
-epochs = 100
+DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
+data_type = "Complex"
+EMOTIONS = DATA['EMOTIONS']
 batch_size = 32
+epochs = 100
+n_layers = 2
 lstm_unit = 512
 current_time = time.strftime("%Y%m%d-%H%M%S")
-model_dir = 'LSTM_' + str(lstm_unit) + '_' + current_time + '/'
-filename = 'LSTM_' + str(lstm_unit) + '_' + current_time + '.h5'
-model_file = '../LSTM/' + model_dir + filename
+model_dir = 'LSTM_' + str(n_layers) + '_' + str(lstm_unit) + '_' + current_time + '/'
+filename = 'LSTM_' + str(n_layers) + '_' + str(lstm_unit) + '_' + current_time + '.h5'
+base_dir = '../LSTM/' + data_type + '/'
+model_file = base_dir + model_dir + filename
 
 def train(model, X_train, y_train, X_val, y_val): 
     # compile and train the model
-    log_dir = '../LSTM/' + model_dir + 'log/'
+    log_dir = base_dir + model_dir + 'log/'
     os.mkdir(log_dir)
     model.compile(optimizer='adam',
                   loss='categorical_crossentropy', metrics=['accuracy'])
     callbacks = [ModelCheckpoint(model_file, monitor='val_acc', save_best_only=True, verbose=0),
-                 TensorBoard(log_dir=log_dir, histogram_freq=10, write_graph=True)]
+                 TensorBoard(log_dir=log_dir, write_graph=True)]
     model.fit(X_train, y_train,
               epochs=epochs,
               batch_size=batch_size,
@@ -45,31 +51,36 @@ def evaluate(X_val, y_val):
     y_true, y_pred = get_predictions_and_labels(model, X_val, y_val)
     cm = confusion_matrix(y_true, y_pred)
     cm_percent = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    df = pd.DataFrame(cm_percent, index=EMOTIONS, columns=EMOTIONS)
+    df.index.name = 'Actual'
+    df.columns.name = 'Predicted'
+    df.to_csv(base_dir+model_dir+'confusion_matrix.csv', float_format='%.4f')
+    
     # plot percentage confusion matrix
     fig1, ax1 = plt.subplots()
-    plot_confusion_matrix(cm_percent, class_names=emotions)
-    plt.savefig('../LSTM/' + model_dir + 'cm_percent_val.png', format='png')
+    plot_confusion_matrix(cm_percent, class_names=EMOTIONS)
+    plt.savefig(base_dir + model_dir + 'cm_percent_val.png', format='png')
     # plot normal confusion matrix
     fig2, ax2 = plt.subplots()
-    plot_confusion_matrix(cm, float_display='.0f', class_names=emotions)
-    plt.savefig('../LSTM/' + model_dir + 'cm_val.png', format='png')
+    plot_confusion_matrix(cm, float_display='.0f', class_names=EMOTIONS)
+    plt.savefig(base_dir + model_dir + 'cm_val.png', format='png')
     
     plt.show()
     
 def compare_model(X_val, y_val):
-    folder_list = [model_dir for model_dir in os.listdir('../LSTM/') if 'LSTM' in model_dir]
+    folder_list = [model_dir for model_dir in os.listdir(base_dir) if 'LSTM' in model_dir]
     for folder in folder_list:
         filename = folder + '.h5'
-        path = os.path.join('../LSTM', folder, filename)
+        path = os.path.join(base_dir, folder, filename)
         model = load_model(path)
         scores = model.evaluate(X_val, y_val)
         print('model: {}, val_loss: {}, val_acc: {}'.format(folder, scores[0], scores[1]))
 
 if __name__ == '__main__':
-#     if not os.path.exists('../LSTM/'+ model_dir):
-#         os.mkdir('../LSTM/' + model_dir)
-    X_train, y_train, X_val, y_val, _, _ = load_data()
-#     model = get_network(X_train, lstm_unit)
+#     if not os.path.exists(base_dir + model_dir):
+#         os.mkdir(base_dir + model_dir)
+    X_train, y_train, X_val, y_val, _, _ = load_data_sequence(data_type=data_type)
+#     model = get_network(n_layers, X_train.shape[1:], lstm_unit, len(EMOTIONS))
 #     model = train(model, X_train, y_train, X_val, y_val)
 #     evaluate(X_val, y_val)
     compare_model(X_val, y_val)

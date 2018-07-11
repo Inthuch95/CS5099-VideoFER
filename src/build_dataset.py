@@ -5,62 +5,65 @@ Created on Jun 27, 2018
 '''
 import numpy as np
 from keras.applications.vgg16 import VGG16, preprocess_input
+from keras.utils import to_categorical
 from keras.preprocessing import image
-import random
+import pickle
 import os
 
-img_width, img_height = 100,100
-seq_length = 2
-data_path = '../prepared_data/Basic/data/'
-emotions = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
-emotionLbls = [[1,0,0,0,0,0,0],[0,1,0,0,0,0,0], [0,0,1,0,0,0,0],[0,0,0,1,0,0,0], [0,0,0,0,1,0,0], [0,0,0,0,0,1,0], [0,0,0,0,0,0,1]]
-deleted_frames = np.load('../deleted_frames.npy')
+DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
+IMG_WIDTH, IMG_HEIGHT = 100,100
+SEQ_LENGTH = 4
+DATA_PATH = DATA['DATA_PATH']
+EMOTIONS = DATA['EMOTIONS']
+DELETED_FRAMES = DATA['DELETED_FRAMES']
+SEQUENCE_PATH = DATA['SEQUENCE_PATH']
+SINGLE_PATH = DATA['SINGLE_PATH']
 
 # get sequence of features for RNN
 def extract_feature_sequence(model):
     X, y = [], []
-    for emotion in emotions:
-        video_list = [f for f in os.listdir(data_path + emotion)]
+    for emotion in EMOTIONS:
+        video_list = [f for f in os.listdir(DATA_PATH + emotion)]
         for video in video_list:
-            video_path = data_path + emotion + '/' + video
+            video_path = DATA_PATH + emotion + '/' + video
             frames = [f for f in os.listdir(video_path) if os.path.isfile(os.path.join(video_path, f))]
-            if len(frames) >= seq_length:
-                sequence = []
-                X, y, sequence = process_frames(frames, video_path, emotion, X, y, sequence)
+            if len(frames) >= SEQ_LENGTH:
+                X, y = process_frames(frames, video_path, emotion, X, y)
         print('{} sequences extracted'.format(emotion))
+    # use onehot encoding for LSTM
+    if SEQ_LENGTH > 1:
+        y = to_categorical(y, num_classes=len(EMOTIONS))
+    # save to binary files
     print('Saving sequence')
-    save_features(X, y)
+    if SEQ_LENGTH == 1:
+        np.save(SINGLE_PATH+'X_vgg16.npy', X)
+        np.save(SINGLE_PATH+'y_vgg16.npy', y)
+    else:
+        np.save(SEQUENCE_PATH+'X_vgg16.npy', X)
+        np.save(SEQUENCE_PATH+'y_vgg16.npy', y)
 
-def process_frames(frames, video_path, emotion, X, y, sequence):
+def process_frames(frames, video_path, emotion, X, y):
+    sequence = []
+    overlap_idx = int(0.9 * SEQ_LENGTH)       
     for frame in frames:
         # exclude neutral frames 
-        if frame not in deleted_frames:
+        if frame not in DELETED_FRAMES:
             frame = video_path + '/' + frame
             features = extract_features(model, frame)
             sequence.append(features)
-            if len(sequence) == seq_length:
+            if len(sequence) == SEQ_LENGTH:
                 X.append(sequence)
-                y.append(emotionLbls[emotions.index(emotion)])
-                sequence = []
-    return X, y, sequence
-
-def save_features(X, y, test_split=0.1):
-    X_train, y_train, X_val, y_val, X_test, y_test = train_test_split(X, y, test_split=test_split)
-            
-    print(X_train.shape)
-    np.save('../prepared_data/Basic/sequence/X_train_vgg16.npy', X_train)
-    np.save('../prepared_data/Basic/sequence/y_train_vgg16.npy', y_train)
-    
-    print(X_val.shape)
-    np.save('../prepared_data/Basic/sequence/X_val_vgg16.npy', X_val)
-    np.save('../prepared_data/Basic/sequence/y_val_vgg16.npy', y_val)
-    
-    print(X_test.shape)
-    np.save('../prepared_data/Basic/sequence/X_test_vgg16.npy', X_test)
-    np.save('../prepared_data/Basic/sequence/y_test_vgg16.npy', y_test)
+                y.append(EMOTIONS.index(emotion))
+                # no overlapping frames if sequence length is less than 2
+                if SEQ_LENGTH > 1:
+                    sequence = sequence[overlap_idx:]
+                else:
+                    sequence = []
+    return X, y
 
 def extract_features(model, image_path):
-    img = image.load_img(image_path, target_size=(img_width, img_height))
+    # load and preprocess the frame
+    img = image.load_img(image_path, target_size=(IMG_WIDTH, IMG_HEIGHT))
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
@@ -68,32 +71,6 @@ def extract_features(model, image_path):
     features = model.predict(x)
     features = features[0]
     return features
-
-def train_test_split(X, y, test_split=0.1):
-    data = list(zip(X, y))
-    random.seed(42)
-    random.shuffle(data)
-    X, y = zip(*data)
-    split_2 = 1.0 - test_split
-    split_1 = split_2 - test_split 
-    split_1 = int(split_1 * len(X)) 
-    split_2 = int(split_2 * len(X))
-    
-    X_train = X[:split_1]
-    y_train = y[:split_1]
-    X_val = X[split_1:split_2]
-    y_val = y[split_1:split_2]
-    X_test = X[split_2:]
-    y_test = y[split_2:]
-    
-    X_train = np.array(X_train)
-    y_train = np.array(y_train)
-    X_val = np.array(X_val)
-    y_val = np.array(y_val)
-    X_test = np.array(X_test)
-    y_test = np.array(y_test)
-    
-    return X_train, y_train, X_val, y_val, X_test, y_test
 
 if __name__ == '__main__':
     model = VGG16(include_top=False, weights='imagenet')

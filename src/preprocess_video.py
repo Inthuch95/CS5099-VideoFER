@@ -6,44 +6,51 @@ Created on Jun 26, 2018
 import os
 import cv2
 import dlib
+import pickle
 
-emotions = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
+DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
+EMOTIONS = list(DATA['EMOTIONS'])
+VIDEO_PATH =  DATA['VIDEO_PATH']
+EXTRACT_PATH = DATA['EXTRACT_PATH']
+DATA_PATH = DATA['DATA_PATH']
 
 def extract_frames_from_video():
-    video_path =  '../EUDataBasicVideo/'
     if not os.path.exists('../video_frames/'):
         os.mkdir('../video_frames/')
-        os.mkdir('../video_frames/Basic/')
+        os.mkdir(EXTRACT_PATH)
     #go through video folder
-    for emotion in emotions:
+    for emotion in EMOTIONS:
         # create label folder
-        emotion_path = '../video_frames/Basic/' + emotion
+        emotion_path = EXTRACT_PATH + emotion
         if not os.path.exists(emotion_path):
             os.mkdir(emotion_path)
-        for f in os.listdir(video_path+emotion):
-            if '.mov' in f:
-                filename = f.replace('.mov', '')
-                video_file = video_path + emotion + '/' + f
-                os.mkdir('../video_frames/Basic/' + emotion + '/' + filename +  '/')
-                filename = '../video_frames/Basic/' + emotion + '/' + filename +  '/' + filename
+        for f in os.listdir(VIDEO_PATH+emotion):
+            if '.mov' in f or 'mp4' in f:
+                if '.mov' in f:
+                    filename = f.replace('.mov', '')
+                else:
+                    filename = f.replace('.mp4', '')
+                video_file = VIDEO_PATH + emotion + '/' + f
+                if not os.path.exists(emotion_path + '/' + filename +  '/'):
+                    os.mkdir(emotion_path + '/' + filename +  '/')
+                file_path = emotion_path + '/' + filename +  '/' + filename
                 # use ffmpeg to extract frames
-                command = 'ffmpeg -i ' + video_file + ' -vf thumbnail=2,setpts=N/TB -r 1 -vframes 300 ' + filename + '%05d.jpeg'
+                command = 'ffmpeg -i ' + video_file + ' -vf thumbnail=2,setpts=N/TB -r 1 -vframes 300 ' + file_path + '%05d.jpeg'
                 os.system(command)
                 
 def crop_face_from_frames():
-    path = '../video_frames/Basic/'
-    dataset_path = '../prepared_data/Basic/data/'
-    count = 0 
+    count = 0
     face_detector = dlib.get_frontal_face_detector()
     
-    for emotion in emotions:
+    for emotion in EMOTIONS:
         print(emotion)
-        if not os.path.exists(dataset_path + emotion):
-            os.mkdir(dataset_path + emotion)
-        for frame_dir in os.listdir(os.path.join(path, emotion)):
-            frame_path = os.path.join(path, emotion, frame_dir)
-            save_path = os.path.join(dataset_path, emotion, frame_dir)
-            os.mkdir(save_path) 
+        if not os.path.exists(DATA_PATH + emotion):
+            os.mkdir(DATA_PATH + emotion)
+        for frame_dir in os.listdir(os.path.join(EXTRACT_PATH, emotion)):
+            frame_path = os.path.join(EXTRACT_PATH, emotion, frame_dir)
+            save_path = os.path.join(DATA_PATH, emotion, frame_dir)
+            if not os.path.exists(save_path):
+                os.mkdir(save_path) 
             filelist = [f for f in os.listdir(frame_path) if os.path.isfile(os.path.join(frame_path, f))]
             # Iterate through files
             for f in filelist:
@@ -69,8 +76,8 @@ def save_frame(detected_face, frame, save_path, count):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         # save frame as JPEG file
-        cv2.imwrite(save_path+'/frame%d.jpg' % count, crop)  
+        cv2.imwrite(save_path+'/frame%d.jpg' % count, crop)
 
 if __name__ == '__main__':
-    extract_frames_from_video()
-    crop_face_from_frames()
+#     extract_frames_from_video()
+#     crop_face_from_frames()

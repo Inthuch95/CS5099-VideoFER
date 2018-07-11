@@ -12,7 +12,7 @@ import os
 
 DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
 IMG_WIDTH, IMG_HEIGHT = 100,100
-SEQ_LENGTH = 4
+SEQ_LENGTH = 2
 DATA_PATH = DATA['DATA_PATH']
 EMOTIONS = DATA['EMOTIONS']
 DELETED_FRAMES = DATA['DELETED_FRAMES']
@@ -44,7 +44,7 @@ def extract_feature_sequence(model):
 
 def process_frames(frames, video_path, emotion, X, y):
     sequence = []
-    overlap_idx = int(0.9 * SEQ_LENGTH)       
+    overlap_idx = int(0.5 * SEQ_LENGTH)       
     for frame in frames:
         # exclude neutral frames 
         if frame not in DELETED_FRAMES:

@@ -54,13 +54,12 @@ if __name__ == '__main__':
     y_pred = svm_linear.predict(X_test)
     cm = confusion_matrix(y_test, y_pred)
     cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    df = pd.DataFrame(cm, index=EMOTIONS, columns=EMOTIONS)
+    df.index.name = 'Actual'
+    df.columns.name = 'Predicted'
+    df.to_csv(base_dir+'confusion_matrix_svm.csv')
     # complex emotions' cm is too large to plot
     if data_type == 'Basic:':
         fig1, ax1 = plt.subplots()
         plot_confusion_matrix(cm, title='Linear SVM', class_names=EMOTIONS)
         plt.show()
-#     else:
-#         df = pd.DataFrame(cm, index=EMOTIONS, columns=EMOTIONS)
-#         df.index.name = 'Actual'
-#         df.columns.name = 'Predicted'
-#         df.to_csv(base_dir+'confusion_matrix.csv', float_format='%.4f')

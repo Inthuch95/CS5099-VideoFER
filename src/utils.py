@@ -145,4 +145,6 @@ def get_network(n_layers, input_shape, lstm_unit, nb_class):
     return model
 
 if __name__ == '__main__':
-    pass
+    for i in range(1, 1000):
+        if 18092 % i == 0:
+            print(i)

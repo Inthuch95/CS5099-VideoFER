@@ -14,7 +14,8 @@ import numpy as np
 DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
 EMOTIONS = DATA['EMOTIONS']
 data_type='Complex'
-model_file = '../LSTM/Complex/LSTM_2_512_20180711-003157/LSTM_2_512_20180711-003157.h5'
+base_dir = '../best model/Complex/'
+model_file =  base_dir + 'LSTM_best/LSTM_best.h5'
 # model_file = '../best model/LSTM_best/LSTM_best.h5'
 
 if __name__ == '__main__':
@@ -39,4 +40,4 @@ if __name__ == '__main__':
     df = pd.DataFrame(cm_percent, index=EMOTIONS, columns=EMOTIONS)
     df.index.name = 'Actual'
     df.columns.name = 'Predicted'
-    df.to_csv('../LSTM/Complex/LSTM_2_512_20180711-003157/'+'confusion_matrix_test.csv', float_format='%.4f')
+    df.to_csv(base_dir+'LSTM_best/confusion_matrix_test.csv', float_format='%.4f')

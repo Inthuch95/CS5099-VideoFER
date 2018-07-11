@@ -17,7 +17,7 @@ import os
 DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
 data_type = "Complex"
 EMOTIONS = DATA['EMOTIONS']
-batch_size = 32
+batch_size = 256
 epochs = 100
 n_layers = 2
 lstm_unit = 512
@@ -54,18 +54,19 @@ def evaluate(X_val, y_val):
     df = pd.DataFrame(cm_percent, index=EMOTIONS, columns=EMOTIONS)
     df.index.name = 'Actual'
     df.columns.name = 'Predicted'
-    df.to_csv(base_dir+model_dir+'confusion_matrix.csv', float_format='%.4f')
+    df.to_csv(base_dir+model_dir+'confusion_matrix_validation.csv', float_format='%.4f')
     
-    # plot percentage confusion matrix
-    fig1, ax1 = plt.subplots()
-    plot_confusion_matrix(cm_percent, class_names=EMOTIONS)
-    plt.savefig(base_dir + model_dir + 'cm_percent_val.png', format='png')
-    # plot normal confusion matrix
-    fig2, ax2 = plt.subplots()
-    plot_confusion_matrix(cm, float_display='.0f', class_names=EMOTIONS)
-    plt.savefig(base_dir + model_dir + 'cm_val.png', format='png')
-    
-    plt.show()
+    if data_type == 'Basic':
+        # plot percentage confusion matrix
+        fig1, ax1 = plt.subplots()
+        plot_confusion_matrix(cm_percent, class_names=EMOTIONS)
+        plt.savefig(base_dir + model_dir + 'cm_percent_val.png', format='png')
+        # plot normal confusion matrix
+        fig2, ax2 = plt.subplots()
+        plot_confusion_matrix(cm, float_display='.0f', class_names=EMOTIONS)
+        plt.savefig(base_dir + model_dir + 'cm_val.png', format='png')
+        
+        plt.show()
     
 def compare_model(X_val, y_val):
     folder_list = [model_dir for model_dir in os.listdir(base_dir) if 'LSTM' in model_dir]
@@ -77,11 +78,11 @@ def compare_model(X_val, y_val):
         print('model: {}, val_loss: {}, val_acc: {}'.format(folder, scores[0], scores[1]))
 
 if __name__ == '__main__':
-#     if not os.path.exists(base_dir + model_dir):
-#         os.mkdir(base_dir + model_dir)
+    if not os.path.exists(base_dir + model_dir):
+        os.mkdir(base_dir + model_dir)
     X_train, y_train, X_val, y_val, _, _ = load_data_sequence(data_type=data_type)
-#     model = get_network(n_layers, X_train.shape[1:], lstm_unit, len(EMOTIONS))
-#     model = train(model, X_train, y_train, X_val, y_val)
-#     evaluate(X_val, y_val)
+    model = get_network(n_layers, X_train.shape[1:], lstm_unit, len(EMOTIONS))
+    model = train(model, X_train, y_train, X_val, y_val)
+    evaluate(X_val, y_val)
     compare_model(X_val, y_val)
     

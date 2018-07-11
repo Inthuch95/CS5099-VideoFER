@@ -55,7 +55,6 @@ def load_data_sequence(data_type='Basic'):
     else:
         base_dir = '../prepared_data/Complex/'
     X = np.load(base_dir+'sequence/X_vgg16.npy')
-    print(X.shape)
     X = X.reshape(X.shape[0], X.shape[1], X.shape[2]*X.shape[3]*X.shape[4])
     y = np.load(base_dir+'sequence/y_vgg16.npy')
     X_train, y_train, X_val, y_val, X_test, y_test = split_dataset(X, y, test_size=0.2)
@@ -68,7 +67,6 @@ def load_data_single(data_type='Basic'):
     else:
         base_dir = '../prepared_data/Complex/'
     X = np.load(base_dir+'single/X_vgg16.npy')
-    print(X.shape)
     X = X.reshape(X.shape[0], X.shape[1]*X.shape[2]*X.shape[3]*X.shape[4])
     y = np.load(base_dir+'single/y_vgg16.npy')
     X_train, y_train, X_test, y_test = split_dataset(X, y, test_size=0.2, val_split=False)

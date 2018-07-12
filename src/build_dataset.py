@@ -11,7 +11,8 @@ import pickle
 import os
 import sys
 
-data_type = 'Basic'
+# data_type = 'Basic'
+data_type = 'Complex'
 if data_type == 'Basic':
     DATA = pickle.load(open('../basic_emotions_data.pkl', 'rb'))
 elif data_type == 'Complex':
@@ -20,7 +21,7 @@ else:
     print("Invalid data type")
     sys.exit()
 IMG_WIDTH, IMG_HEIGHT = 100,100
-SEQ_LENGTH = 10
+SEQ_LENGTH = 3
 OVERLAP_IDX = int(0.9 * SEQ_LENGTH)
 DATA_PATH = DATA['DATA_PATH']
 EMOTIONS = DATA['EMOTIONS']

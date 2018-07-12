@@ -12,8 +12,8 @@ import pickle
 import numpy as np
 import sys
 
-# data_type = 'Basic'
-data_type = 'Complex'
+data_type = 'Basic'
+# data_type = 'Complex'
 if data_type == 'Basic':
     DATA = pickle.load(open('../basic_emotions_data.pkl', 'rb'))
 elif data_type == 'Complex':

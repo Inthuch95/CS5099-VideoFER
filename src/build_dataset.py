@@ -9,10 +9,19 @@ from keras.utils import to_categorical
 from keras.preprocessing import image
 import pickle
 import os
+import sys
 
-DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
+data_type = 'Basic'
+if data_type == 'Basic':
+    DATA = pickle.load(open('../basic_emotions_data.pkl', 'rb'))
+elif data_type == 'Complex':
+    DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
+else:
+    print("Invalid data type")
+    sys.exit()
 IMG_WIDTH, IMG_HEIGHT = 100,100
-SEQ_LENGTH = 2
+SEQ_LENGTH = 10
+OVERLAP_IDX = int(0.9 * SEQ_LENGTH)
 DATA_PATH = DATA['DATA_PATH']
 EMOTIONS = DATA['EMOTIONS']
 DELETED_FRAMES = DATA['DELETED_FRAMES']
@@ -43,8 +52,7 @@ def extract_feature_sequence(model):
         np.save(SEQUENCE_PATH+'y_vgg16.npy', y)
 
 def process_frames(frames, video_path, emotion, X, y):
-    sequence = []
-    overlap_idx = int(0.5 * SEQ_LENGTH)       
+    sequence = []      
     for frame in frames:
         # exclude neutral frames 
         if frame not in DELETED_FRAMES:
@@ -56,7 +64,7 @@ def process_frames(frames, video_path, emotion, X, y):
                 y.append(EMOTIONS.index(emotion))
                 # no overlapping frames if sequence length is less than 2
                 if SEQ_LENGTH > 1:
-                    sequence = sequence[overlap_idx:]
+                    sequence = sequence[OVERLAP_IDX:]
                 else:
                     sequence = []
     return X, y

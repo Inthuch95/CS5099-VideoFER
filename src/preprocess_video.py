@@ -7,8 +7,16 @@ import os
 import cv2
 import dlib
 import pickle
+import sys
 
-DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
+data_type = 'Basic'
+if data_type == 'Basic':
+    DATA = pickle.load(open('../basic_emotions_data.pkl', 'rb'))
+elif data_type == 'Complex':
+    DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
+else:
+    print("Invalid data type")
+    sys.exit()
 EMOTIONS = list(DATA['EMOTIONS'])
 VIDEO_PATH =  DATA['VIDEO_PATH']
 EXTRACT_PATH = DATA['EXTRACT_PATH']

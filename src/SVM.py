@@ -12,10 +12,18 @@ import pandas as pd
 import numpy as np
 import pickle
 import os
+import sys
 
-DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
-EMOTIONS = DATA['EMOTIONS']
+# data_type = 'Basic'
 data_type = 'Complex'
+if data_type == 'Basic':
+    DATA = pickle.load(open('../basic_emotions_data.pkl', 'rb'))
+elif data_type == 'Complex':
+    DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
+else:
+    print("Invalid data type")
+    sys.exit()
+EMOTIONS = DATA['EMOTIONS']
 base_dir = '../SVM/' + data_type + '/'
 
 def train(model, X_train, y_train, kernel):
@@ -42,7 +50,7 @@ def display_score(scores):
 if __name__ == '__main__':
     X_train, y_train, X_test, y_test = load_data_single(data_type=data_type)
 #     # evaluate linear svm
-#     print('Evaluating linear SVM')
+    print('Evaluating linear SVM')
 #     svm_linear = LinearSVC()
 #     evaluate_cv(svm_linear, X_train, y_train, 'linear')
 #     svm_linear = train(svm_linear, X_train, y_train, 'linear')
@@ -59,7 +67,8 @@ if __name__ == '__main__':
     df.columns.name = 'Predicted'
     df.to_csv(base_dir+'confusion_matrix_svm.csv')
     # complex emotions' cm is too large to plot
-    if data_type == 'Basic:':
+    if data_type == 'Basic':
         fig1, ax1 = plt.subplots()
         plot_confusion_matrix(cm, title='Linear SVM', class_names=EMOTIONS)
+        plt.savefig(base_dir+'confusion_matrix_svm.png', format='png')
         plt.show()

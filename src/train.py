@@ -13,14 +13,21 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import sys
 
-DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
-data_type = "Complex"
+data_type = 'Complex'
+if data_type == 'Basic':
+    DATA = pickle.load(open('../basic_emotions_data.pkl', 'rb'))
+elif data_type == 'Complex':
+    DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
+else:
+    print("Invalid data type")
+    sys.exit()
 EMOTIONS = DATA['EMOTIONS']
 batch_size = 256
 epochs = 100
 n_layers = 2
-lstm_unit = 512
+lstm_unit = 16
 current_time = time.strftime("%Y%m%d-%H%M%S")
 model_dir = 'LSTM_' + str(n_layers) + '_' + str(lstm_unit) + '_' + current_time + '/'
 filename = 'LSTM_' + str(n_layers) + '_' + str(lstm_unit) + '_' + current_time + '.h5'

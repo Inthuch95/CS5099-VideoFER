@@ -48,6 +48,28 @@ def get_predictions_and_labels(model, X, y):
         y_pred.append(p)    
     return y_true, y_pred    
 
+def load_au_sequence(data_type='Basic'):
+    # load data
+    if data_type == 'Basic':
+        base_dir = '../prepared_data/Basic/sequence/'
+    else:
+        base_dir = '../prepared_data/Complex/sequence/'
+    X = np.load(base_dir+'X_au.npy')
+    y = np.load(base_dir+'y_au.npy')
+    X_train, y_train, X_val, y_val, X_test, y_test = split_dataset(X, y, test_size=0.2)
+    return X_train, y_train, X_val, y_val, X_test, y_test
+
+def load_au_single(data_type='Basic'):
+    # load data
+    if data_type == 'Basic':
+        base_dir = '../prepared_data/Basic/single/'
+    else:
+        base_dir = '../prepared_data/Complex/single/'
+    X = np.load(base_dir+'X_au.npy')
+    y = np.load(base_dir+'y_au.npy')
+    X_train, y_train, X_test, y_test = split_dataset(X, y, test_size=0.2, val_split=False)
+    return X_train, y_train, X_test, y_test
+
 def load_data_sequence(data_type='Basic'):
     # load data
     if data_type == 'Basic':

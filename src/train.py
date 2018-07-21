@@ -15,8 +15,8 @@ import matplotlib.pyplot as plt
 import os
 import sys
 
-data_type = 'Complex'
-# data_type = 'Basic'
+# data_type = 'Complex'
+data_type = 'Basic'
 if data_type == 'Basic':
     DATA = pickle.load(open('../basic_emotions_data.pkl', 'rb'))
 elif data_type == 'Complex':
@@ -25,9 +25,9 @@ else:
     print("Invalid data type")
     sys.exit()
 EMOTIONS = DATA['EMOTIONS']
-batch_size = 256
+batch_size = 32
 epochs = 100
-n_layers = 3
+n_layers = 1
 lstm_unit = 512
 current_time = time.strftime("%Y%m%d-%H%M%S")
 model_dir = 'LSTM_' + str(n_layers) + '_' + str(lstm_unit) + '_' + current_time + '/'

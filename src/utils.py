@@ -56,6 +56,7 @@ def load_au_sequence(data_type='Basic'):
         base_dir = '../prepared_data/Complex/sequence/'
     X = np.load(base_dir+'X_au.npy')
     y = np.load(base_dir+'y_au.npy')
+    print(X.shape)
     X_train, y_train, X_val, y_val, X_test, y_test = split_dataset(X, y, test_size=0.2)
     return X_train, y_train, X_val, y_val, X_test, y_test
 
@@ -67,6 +68,8 @@ def load_au_single(data_type='Basic'):
         base_dir = '../prepared_data/Complex/single/'
     X = np.load(base_dir+'X_au.npy')
     y = np.load(base_dir+'y_au.npy')
+    print(X.shape)
+    X = X.reshape(X.shape[0], X.shape[1]*X.shape[2])
     X_train, y_train, X_test, y_test = split_dataset(X, y, test_size=0.2, val_split=False)
     return X_train, y_train, X_test, y_test
 

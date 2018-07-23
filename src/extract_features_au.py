@@ -11,8 +11,8 @@ import sys
 import os
 import subprocess
 
-# data_type = 'Basic'
-data_type = 'Complex'
+data_type = 'Basic'
+# data_type = 'Complex'
 if data_type == 'Basic':
     DATA = pickle.load(open('../basic_emotions_data.pkl', 'rb'))
     au_path = '../prepared_data/Basic/au_data/'

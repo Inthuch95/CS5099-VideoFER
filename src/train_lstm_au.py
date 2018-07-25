@@ -28,7 +28,7 @@ EMOTIONS = DATA['EMOTIONS']
 batch_size = 256
 epochs = 250
 n_layers = 2
-lstm_unit = 64
+lstm_unit = 512
 current_time = time.strftime("%Y%m%d-%H%M%S")
 model_dir = 'LSTM_' + str(n_layers) + '_' + str(lstm_unit) + '_' + current_time + '/'
 filename = 'LSTM_' + str(n_layers) + '_' + str(lstm_unit) + '_' + current_time + '.h5'
@@ -87,10 +87,10 @@ def compare_model(X_val, y_val):
         print('model: {}, val_loss: {}, val_acc: {}'.format(folder, scores[0], scores[1]))
 
 if __name__ == '__main__':
-    if not os.path.exists(base_dir + model_dir):
-        os.mkdir(base_dir + model_dir)
+#     if not os.path.exists(base_dir + model_dir):
+#         os.mkdir(base_dir + model_dir)
     X_train, y_train, X_val, y_val, _, _ = load_au_sequence(data_type=data_type)
-    model = get_network(n_layers, X_train.shape[1:], lstm_unit, len(EMOTIONS))
-    model = train(model, X_train, y_train, X_val, y_val)
-    evaluate(X_val, y_val)
+#     model = get_network(n_layers, X_train.shape[1:], lstm_unit, len(EMOTIONS))
+#     model = train(model, X_train, y_train, X_val, y_val)
+#     evaluate(X_val, y_val)
     compare_model(X_val, y_val)

@@ -12,8 +12,8 @@ import pickle
 import numpy as np
 import sys
 
-data_type = 'Basic'
-# data_type = 'Complex'
+# data_type = 'Basic'
+data_type = 'Complex'
 if data_type == 'Basic':
     DATA = pickle.load(open('../basic_emotions_data.pkl', 'rb'))
 elif data_type == 'Complex':
@@ -22,8 +22,8 @@ else:
     print("Invalid data type")
     sys.exit()
 EMOTIONS = DATA['EMOTIONS']
-base_dir = '../best model/' + data_type + '/'
-model_file =  base_dir + 'LSTM_best/LSTM_best.h5'
+base_dir = '../best model/' + data_type + '/VGG16/'
+model_file =  base_dir + 'LSTM_best.h5'
 # model_file = '../best model/LSTM_best/LSTM_best.h5'
 
 if __name__ == '__main__':
@@ -41,14 +41,14 @@ if __name__ == '__main__':
     if data_type == 'Basic':
         fig1, ax1 = plt.subplots()
         plot_confusion_matrix(cm_percent, title='LSTM', class_names=EMOTIONS)
-        plt.savefig(base_dir+'LSTM_best/cm_percent_test.png')    
+        plt.savefig(base_dir+'cm_percent_test.png')    
         plt.show()
         # plot normal confusion matrix
         fig2, ax2 = plt.subplots()
         plot_confusion_matrix(cm, title='LSTM', float_display='.0f', class_names=EMOTIONS)
-        plt.savefig(base_dir+'LSTM_best/cm_test.png')
+        plt.savefig(base_dir+'cm_test.png')
         
     df = pd.DataFrame(cm_percent, index=EMOTIONS, columns=EMOTIONS)
     df.index.name = 'Actual'
     df.columns.name = 'Predicted'
-    df.to_csv(base_dir+'LSTM_best/confusion_matrix_test.csv', float_format='%.4f')
+    df.to_csv(base_dir+'confusion_matrix_test.csv', float_format='%.4f')

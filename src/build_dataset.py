@@ -87,5 +87,6 @@ def save_frame(detected_face, frame, save_path, count):
         cv2.imwrite(save_path+'/frame%d.jpg' % count, crop)
 
 if __name__ == '__main__':
+    pass
 #     extract_frames_from_video()
 #     crop_face_from_frames()

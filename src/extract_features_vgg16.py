@@ -21,7 +21,7 @@ else:
     print("Invalid data type")
     sys.exit()
 IMG_WIDTH, IMG_HEIGHT = 100,100
-SEQ_LENGTH = 4
+SEQ_LENGTH = 2
 OVERLAP_IDX = int(0.9 * SEQ_LENGTH)
 DATA_PATH = DATA['DATA_PATH']
 EMOTIONS = DATA['EMOTIONS']

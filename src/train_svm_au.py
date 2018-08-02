@@ -15,8 +15,8 @@ import pickle
 import os
 import sys
 
-# data_type = 'Basic'
-data_type = 'Complex'
+data_type = 'Basic'
+# data_type = 'Complex'
 if data_type == 'Basic':
     DATA = pickle.load(open('../basic_emotions_data.pkl', 'rb'))
 elif data_type == 'Complex':
@@ -65,7 +65,8 @@ def display_results(model, scores, kernel='linear'):
     if data_type == 'Basic':
         plt.subplots()
         plot_confusion_matrix(cm, title=kernel, class_names=EMOTIONS)
-        plt.savefig(base_dir+'confusion_matrix_'+filename+'.png', format='png')
+        plt.savefig(base_dir+filename+'.png', format='png')
+        plt.show()
 
 if __name__ == '__main__':
     X_train, y_train, X_test, y_test = load_au_single(data_type=data_type)
@@ -74,11 +75,10 @@ if __name__ == '__main__':
     X_test = scaler.transform(X_test)
 #     # evaluate_vgg16 linear svm
     print('Evaluating linear SVM')
-    svm_linear = LinearSVC()
-    evaluate_cv(svm_linear, X_train, y_train)
-    svm_linear = train(svm_linear, X_train, y_train)
+#     svm_linear = LinearSVC()
+#     evaluate_cv(svm_linear, X_train, y_train)
+#     svm_linear = train(svm_linear, X_train, y_train)
     
     svm_linear = pickle.load(open(base_dir+'linear.pkl', 'rb'))
     linear_scores = pickle.load(open(base_dir+'linear_cv.pkl', 'rb'))
     display_results(svm_linear, linear_scores)
-    plt.show()

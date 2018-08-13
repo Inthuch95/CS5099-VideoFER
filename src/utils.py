@@ -3,8 +3,6 @@ Created on Jun 23, 2018
 
 @author: Inthuch Therdchanakul
 '''
-from keras.models import Sequential
-from keras.layers import LSTM, Dense
 from sklearn.model_selection import train_test_split
 import itertools
 import matplotlib.pyplot as plt
@@ -167,24 +165,6 @@ def load_var(data_type):
         print("Invalid data type")
         sys.exit()
     return DATA
-
-def get_network(n_layers, input_shape, lstm_unit, nb_class):
-    model = Sequential()
-    if n_layers > 1:
-        model.add(LSTM(lstm_unit, return_sequences=True, input_shape=input_shape,
-                   dropout=0.2))
-        layer_count = 1
-        while layer_count < n_layers:
-            if layer_count == n_layers-1:
-                model.add(LSTM(lstm_unit, return_sequences=False, dropout=0.2))
-            else:
-                model.add(LSTM(lstm_unit, return_sequences=True, dropout=0.2))
-            layer_count += 1
-    else:
-        model.add(LSTM(lstm_unit, return_sequences=False, input_shape=input_shape,
-                   dropout=0.2))
-    model.add(Dense(nb_class, activation='softmax'))
-    return model
 
 if __name__ == '__main__':
     pass

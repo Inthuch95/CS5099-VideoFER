@@ -110,7 +110,7 @@ def save_frame(detected_face, frame, save_path, count, filename):
         cv2.imwrite(save_path+'/'+filename, crop)
 
 if __name__ == '__main__':
-#     crop_face_from_frames()
+    crop_face_from_frames()
     model = VGG16(include_top=False, weights='imagenet')
     extract_feature_sequence(model)
     print('Sequences saved')

@@ -10,6 +10,7 @@ import itertools
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
+import sys
 import os
         
 def plot_confusion_matrix(cm, title='Confusion matrix', float_display='.4f', cmap=plt.cm.Greens, class_names=None):
@@ -56,7 +57,6 @@ def load_au_sequence(data_type='Basic'):
         base_dir = '../prepared_data/Complex/sequence/'
     X = np.load(base_dir+'X_au.npy')
     y = np.load(base_dir+'y_au.npy')
-    print(X.shape)
     X_train, y_train, X_val, y_val, X_test, y_test = split_dataset(X, y, test_size=0.2)
     return X_train, y_train, X_val, y_val, X_test, y_test
 
@@ -68,12 +68,11 @@ def load_au_single(data_type='Basic'):
         base_dir = '../prepared_data/Complex/single/'
     X = np.load(base_dir+'X_au.npy')
     y = np.load(base_dir+'y_au.npy')
-    print(X.shape)
     X = X.reshape(X.shape[0], X.shape[1]*X.shape[2])
     X_train, y_train, X_test, y_test = split_dataset(X, y, test_size=0.2, val_split=False)
     return X_train, y_train, X_test, y_test
 
-def load_data_sequence(data_type='Basic'):
+def load_vgg_sequence(data_type='Basic'):
     # load data
     if data_type == 'Basic':
         base_dir = '../prepared_data/Basic/'
@@ -85,7 +84,7 @@ def load_data_sequence(data_type='Basic'):
     X_train, y_train, X_val, y_val, X_test, y_test = split_dataset(X, y, test_size=0.2)
     return X_train, y_train, X_val, y_val, X_test, y_test
 
-def load_data_single(data_type='Basic'):
+def load_vgg_single(data_type='Basic'):
     # load data
     if data_type == 'Basic':
         base_dir = '../prepared_data/Basic/'
@@ -97,7 +96,7 @@ def load_data_single(data_type='Basic'):
     X_train, y_train, X_test, y_test = split_dataset(X, y, test_size=0.2, val_split=False)
     return X_train, y_train, X_test, y_test
 
-def load_game_data():
+def load_game_sequence():
     base_dir = '../prepared_data/Game/'
     X = np.load(base_dir+'sequence/X_game.npy')
     X = X.reshape(X.shape[0], X.shape[1], X.shape[2]*X.shape[3]*X.shape[4])
@@ -158,6 +157,16 @@ def save_var_data(data_type='Basic'):
             pickle.dump(data_dict, f)
     else:
         print('Invalid parameter')
+        
+def load_var(data_type):
+    if data_type == 'Basic' or data_type == 'Game':
+        DATA = pickle.load(open('../basic_emotions_data.pkl', 'rb'))
+    elif data_type == 'Complex':
+        DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
+    else:
+        print("Invalid data type")
+        sys.exit()
+    return DATA
 
 def get_network(n_layers, input_shape, lstm_unit, nb_class):
     model = Sequential()

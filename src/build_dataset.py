@@ -3,20 +3,13 @@ Created on Jun 26, 2018
 
 @author: Inthuch Therdchanakul
 '''
+from utils import load_var
 import os
 import cv2
 import dlib
-import pickle
-import sys
 
 data_type = 'Basic'
-if data_type == 'Basic':
-    DATA = pickle.load(open('../basic_emotions_data.pkl', 'rb'))
-elif data_type == 'Complex':
-    DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
-else:
-    print("Invalid data type")
-    sys.exit()
+DATA = load_var(data_type)
 EMOTIONS = list(DATA['EMOTIONS'])
 VIDEO_PATH =  DATA['VIDEO_PATH']
 EXTRACT_PATH = DATA['EXTRACT_PATH']
@@ -87,6 +80,5 @@ def save_frame(detected_face, frame, save_path, count):
         cv2.imwrite(save_path+'/frame%d.jpg' % count, crop)
 
 if __name__ == '__main__':
-    pass
-#     extract_frames_from_video()
-#     crop_face_from_frames()
+    extract_frames_from_video()
+    crop_face_from_frames()

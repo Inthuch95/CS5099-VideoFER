@@ -24,8 +24,8 @@ else:
     print("Invalid data type")
     sys.exit()
 EMOTIONS = DATA['EMOTIONS']
-base_dir = '../best model/' + data_type + '/'
-model_file =  base_dir + 'LSTM_best/LSTM_best.h5'
+# base_dir = '../best model/' + data_type + '/'
+model_file =  '../best model/Game/offline/LSTM_best.h5'
 model = load_model(model_file)
 vgg16 = VGG16(include_top=False, weights='imagenet')
 face_detector = dlib.get_frontal_face_detector()
@@ -57,7 +57,7 @@ while True:
     faces = face_detector(frame, 1)
     
     if ret != 0 and len(faces) != 0:
-        if frame_count % 3 == 0:
+        if frame_count % 2 == 0:
             # Draw a rectangle around the faces
             crop = frame[faces[0].top():faces[0].bottom(), faces[0].left():faces[0].right()]
             cv2.imwrite('../temp/frame%d.jpg' % count, crop)
@@ -95,3 +95,4 @@ while True:
 # When everything is done, release the capture
 video_capture.release()
 cv2.destroyAllWindows()
+clean_temp_dir()

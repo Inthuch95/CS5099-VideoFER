@@ -7,19 +7,12 @@ import numpy as np
 from keras.applications.vgg16 import VGG16, preprocess_input
 from keras.utils import to_categorical
 from keras.preprocessing import image
-import pickle
+from utils import load_var
 import os
-import sys
 
 data_type = 'Basic'
 # data_type = 'Complex'
-if data_type == 'Basic':
-    DATA = pickle.load(open('../basic_emotions_data.pkl', 'rb'))
-elif data_type == 'Complex':
-    DATA = pickle.load(open('../complex_emotions_data.pkl', 'rb'))
-else:
-    print("Invalid data type")
-    sys.exit()
+DATA = load_var(data_type)
 IMG_WIDTH, IMG_HEIGHT = 100,100
 SEQ_LENGTH = 2
 OVERLAP_IDX = int(0.9 * SEQ_LENGTH)

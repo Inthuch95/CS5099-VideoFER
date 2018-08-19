@@ -11,7 +11,6 @@ from utils import load_var
 import os
 
 data_type = 'Basic'
-# data_type = 'Complex'
 DATA = load_var(data_type)
 IMG_WIDTH, IMG_HEIGHT = 100,100
 SEQ_LENGTH = 2

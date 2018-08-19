@@ -32,6 +32,7 @@ def load_test_data(data_type, feature, eval_mode='game'):
     else:
         if feature == 'VGG16':
             _, _, X_val, y_val, X_test, y_test = load_vgg_sequence(data_type=data_type)
+            
         elif feature == 'AU':
             _, _, X_val, y_val, X_test, y_test = load_au_sequence(data_type=data_type)
         else:
@@ -53,7 +54,8 @@ def save_results(model, X_test, y_test, EMOTIONS, base_dir):
     # plot percentage confusion matrix
     fig1, ax1 = plt.subplots()
     plot_confusion_matrix(cm_percent, title='LSTM', class_names=EMOTIONS)
-    plt.savefig(base_dir+'cm_percent_test.png')    
+    plt.savefig(base_dir+'cm_percent_test.png')  
+    
     plt.show()
     # plot normal confusion matrix
     fig2, ax2 = plt.subplots()
@@ -67,12 +69,12 @@ def save_results(model, X_test, y_test, EMOTIONS, base_dir):
 
 if __name__ == '__main__':
     feature = 'VGG16'
-    data_type = 'Game'
+    data_type = 'Basic'
     eval_mode = 'game'
     DATA = load_var(data_type)
     EMOTIONS = DATA['EMOTIONS']
     base_dir = '../best model/' + data_type + '/' + feature + '/'
-    model_file =  base_dir + 'LSTM_best.h5'
+    model_file =  base_dir + 'LSTM.h5'
     
     # evaluate the model with test set
     X_val, y_val, X_test, y_test = load_test_data(data_type, feature, eval_mode=eval_mode)

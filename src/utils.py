@@ -66,6 +66,7 @@ def load_au_single(data_type='Basic'):
         base_dir = '../prepared_data/Complex/single/'
     X = np.load(base_dir+'X_au.npy')
     y = np.load(base_dir+'y_au.npy')
+    print(X.shape)
     X = X.reshape(X.shape[0], X.shape[1]*X.shape[2])
     X_train, y_train, X_test, y_test = split_dataset(X, y, test_size=0.2, val_split=False)
     return X_train, y_train, X_test, y_test
@@ -80,6 +81,19 @@ def load_vgg_sequence(data_type='Basic'):
     X = X.reshape(X.shape[0], X.shape[1], X.shape[2]*X.shape[3]*X.shape[4])
     y = np.load(base_dir+'sequence/y_vgg16.npy')
     X_train, y_train, X_val, y_val, X_test, y_test = split_dataset(X, y, test_size=0.2)
+    return X_train, y_train, X_val, y_val, X_test, y_test
+
+def load_game_and_vgg():
+    base_dir = '../prepared_data/Game/'
+    X = np.load(base_dir+'sequence/X_game.npy')
+    X = X.reshape(X.shape[0], X.shape[1], X.shape[2]*X.shape[3]*X.shape[4])
+    y = np.load(base_dir+'sequence/y_game.npy')
+    X_val, y_val, X_test, y_test = split_dataset(X, y, test_size=0.5, val_split=False)
+    
+    base_dir = '../prepared_data/Basic/'
+    X_train = np.load(base_dir+'sequence/X_vgg16.npy')
+    X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], X_train.shape[2]*X_train.shape[3]*X_train.shape[4])
+    y_train = np.load(base_dir+'sequence/y_vgg16.npy')
     return X_train, y_train, X_val, y_val, X_test, y_test
 
 def load_vgg_single(data_type='Basic'):
@@ -167,4 +181,4 @@ def load_var(data_type):
     return DATA
 
 if __name__ == '__main__':
-    pass
+    X_train, y_train, X_test, y_test = load_au_single(data_type='Basic')

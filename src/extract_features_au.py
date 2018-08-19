@@ -12,7 +12,6 @@ import os
 import subprocess
 
 data_type = 'Basic'
-# data_type = 'Complex'
 if data_type == 'Basic':
     DATA = pickle.load(open('../basic_emotions_data.pkl', 'rb'))
     au_path = '../prepared_data/Basic/au_data/'
@@ -84,5 +83,5 @@ def get_sequence(X, y, df, emotion):
     return X, y
                 
 if __name__ == '__main__':
-#     extract_au()
+    extract_au()
     build_au_sequence()

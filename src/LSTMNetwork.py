@@ -91,7 +91,20 @@ class LSTMNetwork():
             path = os.path.join(self.base_dir, folder, filename)
             model = load_model(path)
             scores = model.evaluate(X_val, y_val)
-            print('model: {}, val_loss: {}, val_acc: {}'.format(folder, scores[0], scores[1]))        
+            print('model: {}, val_loss: {}, val_acc: {}'.format(folder, scores[0], scores[1]))
+            
+            y_true, y_pred = get_predictions_and_labels(model, X_val, y_val)
+            cm = confusion_matrix(y_true, y_pred)
+            cm_percent = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+            
+            # plot percentage confusion matrix
+            fig1, ax1 = plt.subplots()
+            plot_confusion_matrix(cm_percent, class_names=self.EMOTIONS)
+            plt.savefig(os.path.join(self.base_dir, folder, 'cm_percent_test.png'), format='png')
+            # plot normal confusion matrix
+            fig2, ax2 = plt.subplots()
+            plot_confusion_matrix(cm, float_display='.0f', class_names=self.EMOTIONS)
+            plt.savefig(os.path.join(self.base_dir, folder, 'cm_test.png'), format='png')        
 
 if __name__ == '__main__':
     pass

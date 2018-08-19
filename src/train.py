@@ -9,12 +9,12 @@ import numpy as np
 import sys
 
 if __name__ == '__main__':
-    feature = 'VGG16'
-    data_type = 'Complex'
+    feature = 'AU'
+    data_type = 'Basic'
     n_layer = 1
-    lstm_unit = 16
-    batch_size = 32
-    epochs = 10
+    lstm_unit = 32
+    batch_size = 256
+    epochs = 250
     if data_type == 'Game':
         feature = 'VGG16'
         X_train, y_train, X_val, y_val, _, _ = load_vgg_sequence()
@@ -25,13 +25,13 @@ if __name__ == '__main__':
         y_val = np.concatenate((y_val, y_val_game))
     else:
         if feature == 'VGG16':
-            X_train, y_train, X_val, y_val, _, _ = load_vgg_sequence(data_type=data_type)
+            X_train, y_train, X_val, y_val, X_test, y_test = load_vgg_sequence(data_type=data_type)
         elif feature == 'AU':
-            X_train, y_train, X_val, y_val, _, _ = load_au_sequence(data_type=data_type)
+            X_train, y_train, X_val, y_val, X_test, y_test = load_au_sequence(data_type=data_type)
         else:
             print("Invalid feature")
             sys.exit()
     lstm_net = LSTMNetwork(n_layer, lstm_unit, X_train.shape[1:], feature, data_type)
 #     lstm_net.train(X_train, y_train, X_val, y_val, epochs, batch_size)
 #     lstm_net.evaluate(X_val, y_val)
-    lstm_net.compare_model(X_val, y_val)
+    lstm_net.compare_model(X_test, y_test)

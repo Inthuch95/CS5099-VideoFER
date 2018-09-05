@@ -59,6 +59,9 @@ if not os.path.exists('../temp/'):
     os.mkdir('../temp/')
 
 data_type = 'Basic'
+video_capture = cv2.VideoCapture(0)
+frameWidth = int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH))
+frameHeight = int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
 feature = 'VGG16'
 SEQ_LENGTH = 2
 DATA = load_var(data_type)
@@ -68,9 +71,6 @@ model = load_model(model_file)
 vgg16 = VGG16(include_top=False, weights='imagenet')
 face_detector = dlib.get_frontal_face_detector()
 emotion =''
-video_capture = cv2.VideoCapture(0)
-frameWidth = int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH))
-frameHeight = int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
 count = 0
 frame_count = 0
 sequence = []
